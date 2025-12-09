@@ -7,75 +7,62 @@ rutalecturas = APIRouter()
 # ======================================
 #   OBTENER TODAS LAS LECTURAS
 # ======================================
-@rutalecturas.get("/lecturas")
+@rutalecturas.get("/getlecturas")
 def get_lecturas():
-    consulta = "SELECT * FROM vista_lecturas_brutas;"
     try:
         cursor = connexion.cursor()
-        cursor.execute(consulta)
-        resultado = cursor.fetchall()
-        return resultado
+        cursor.execute("SELECT * FROM vista_lecturas_brutas;")
+        return cursor.fetchall()
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   CREAR LECTURA
 # ======================================
-@rutalecturas.post("/lecturas")
+@rutalecturas.post("/crearlectura")
 def crear_lectura(lec: Lecturas_brutas):
-    query = f"""
-        CALL crear_lectura(
-            {lec.valor_co2},
-            {lec.valor_tvocs},
-            {lec.id_dispositivo}
-        );
-    """
+    query = "SELECT crear_lectura(%s, %s, %s);"
+    valores = (lec.valor_co2, lec.valor_tvocs, lec.id_dispositivo)
+
     try:
         cursor = connexion.cursor()
-        cursor.execute(query)
+        cursor.execute(query, valores)
         connexion.commit()
         return {"message": "Lectura creada correctamente"}
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   ACTUALIZAR LECTURA
 # ======================================
-@rutalecturas.put("/lecturas")
+@rutalecturas.put("/actualizarlectura")
 def actualizar_lectura(lec: Lecturas_brutas):
-    query = f"""
-        CALL actualizar_lectura(
-            {lec.id_lectura},
-            {lec.valor_co2},
-            {lec.valor_tvocs},
-            {lec.id_dispositivo}
-        );
-    """
+    query = "SELECT actualizar_lectura(%s, %s, %s, %s);"
+    valores = (lec.id_lectura, lec.valor_co2, lec.valor_tvocs, lec.id_dispositivo)
+
     try:
         cursor = connexion.cursor()
-        cursor.execute(query)
+        cursor.execute(query, valores)
         connexion.commit()
         return {"message": "Lectura actualizada correctamente"}
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   ELIMINAR LECTURA
 # ======================================
-@rutalecturas.delete("/lecturas")
+@rutalecturas.delete("/eliminarlectura")
 def eliminar_lectura(lec: Lecturas_brutas):
-    query = f"CALL eliminar_lectura({lec.id_lectura});"
+    query = "SELECT eliminar_lectura(%s);"
+    valores = (lec.id_lectura,)
+
     try:
         cursor = connexion.cursor()
-        cursor.execute(query)
+        cursor.execute(query, valores)
         connexion.commit()
         return {"message": "Lectura eliminada correctamente"}
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
