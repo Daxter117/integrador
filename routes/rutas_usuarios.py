@@ -27,7 +27,6 @@ def crear_usuario(usu: Usuarios):
             '{usu.nombre}',
             '{usu.correo}',
             '{usu.contrasena}',
-            '{usu.direccion}'
         );
     """
     try:
@@ -50,7 +49,6 @@ def actualizar_usuario(usu: Usuarios):
             '{usu.nombre}',
             '{usu.correo}',
             '{usu.contrasena}',
-            '{usu.direccion}'
         );
     """
     try:
@@ -75,3 +73,4 @@ def eliminar_usuario(usu: Usuarios):
         return {"message": "Usuario eliminado correctamente"}
     except Exception as err:
         return {"error": str(err)}
+
