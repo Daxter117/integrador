@@ -16,14 +16,13 @@ def get_dispositivos():
     except Exception as err:
         return {"error": str(err)}
 
-
 # ======================================
 #   CREAR DISPOSITIVO
 # ======================================
 @rutadispositivos.post("/creardispositivo")
 def crear_dispositivo(dis: Dispositivos):
-    query = "SELECT crear_dispositivo(%s, %s, %s);"
-    valores = (dis.estado, dis.modo_operacion, dis.id_usuario)
+    query = "SELECT crear_dispositivo(%s, %s, %s, %s);"
+    valores = (dis.estado, dis.modo_operacion, dis.id_usuario, dis.ip)
 
     try:
         cursor = connexion.cursor()
@@ -33,14 +32,13 @@ def crear_dispositivo(dis: Dispositivos):
     except Exception as err:
         return {"error": str(err)}
 
-
 # ======================================
 #   ACTUALIZAR DISPOSITIVO
 # ======================================
 @rutadispositivos.put("/actualizardispositivo")
 def actualizar_dispositivo(dis: Dispositivos):
-    query = "SELECT actualizar_dispositivo(%s, %s, %s, %s);"
-    valores = (dis.id_dispositivo, dis.estado, dis.modo_operacion, dis.id_usuario)
+    query = "SELECT actualizar_dispositivo(%s, %s, %s, %s, %s);"
+    valores = (dis.id_dispositivo, dis.estado, dis.modo_operacion, dis.id_usuario, dis.ip)
 
     try:
         cursor = connexion.cursor()
@@ -49,7 +47,6 @@ def actualizar_dispositivo(dis: Dispositivos):
         return {"message": "Dispositivo actualizado correctamente"}
     except Exception as err:
         return {"error": str(err)}
-
 
 # ======================================
 #   ELIMINAR DISPOSITIVO
@@ -63,4 +60,6 @@ def eliminar_dispositivo(dis: Dispositivos):
         cursor = connexion.cursor()
         cursor.execute(query, valores)
         connexion.commit()
-        return {"message": "Dispositivo eli
+        return {"message": "Dispositivo eliminado correctamente"}
+    except Exception as err:
+        return {"error": str(err)}
