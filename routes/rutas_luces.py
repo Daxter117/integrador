@@ -4,79 +4,65 @@ from schemas.luces import Luces
 
 rutaluces = APIRouter()
 
-
-# ================================
-#     GET LUCES
-# ================================
-@rutaluces.post("/getluces")
+# ======================================
+#   GET LUCES
+# ======================================
+@rutaluces.get("/getluces")
 def get_luces():
-    consulta = "SELECT * FROM vista_luces"
     try:
-        sql = connexion.cursor()
-        sql.execute(consulta)
-        resultado = sql.fetchall()
-        return resultado
+        cursor = connexion.cursor()
+        cursor.execute("SELECT * FROM vista_luces;")
+        return cursor.fetchall()
     except Exception as err:
-        print("----- Error:", err)
         return {"error": str(err)}
 
 
-# ================================
-#     INSERTAR LUZ
-# ================================
-@rutaluces.post("/insertluz")
-def insert_luz(luz: Luces):
-    consulta = f"""
-    CALL crear_luz(
-        '{luz.nombre_luz}',
-        '{luz.estado}',
-        '{luz.id_dispositivo}'
-    );
-    """
+# ======================================
+#   CREAR LUZ
+# ======================================
+@rutaluces.post("/crearluz")
+def crear_luz(luz: Luces):
+    query = "SELECT crear_luz(%s, %s, %s);"
+    valores = (luz.estado_luz, luz.modo_func, luz.id_dispositivo)
+
     try:
-        sql = connexion.cursor()
-        sql.execute(consulta)
+        cursor = connexion.cursor()
+        cursor.execute(query, valores)
         connexion.commit()
-        return {"message": "1"}
-    except Exception as e:
-        print("----- Error:", e)
-        return {"error": str(e)}
+        return {"message": "Luz creada correctamente"}
+    except Exception as err:
+        return {"error": str(err)}
 
 
-# ================================
-#     ELIMINAR LUZ
-# ================================
-@rutaluces.post("/delluz")
-def delete_luz(luz: Luces):
-    consulta = f"CALL eliminar_luz('{luz.id_luz}');"
+# ======================================
+#   ACTUALIZAR LUZ
+# ======================================
+@rutaluces.put("/actualizarluz")
+def actualizar_luz(luz: Luces):
+    query = "SELECT actualizar_luz(%s, %s, %s, %s);"
+    valores = (luz.id_luz, luz.estado_luz, luz.modo_func, luz.id_dispositivo)
+
     try:
-        sql = connexion.cursor()
-        sql.execute(consulta)
+        cursor = connexion.cursor()
+        cursor.execute(query, valores)
         connexion.commit()
-        return {"message": "1"}
-    except Exception as e:
-        print("----- Error:", e)
-        return {"error": str(e)}
+        return {"message": "Luz actualizada correctamente"}
+    except Exception as err:
+        return {"error": str(err)}
 
 
-# ================================
-#     ACTUALIZAR LUZ
-# ================================
-@rutaluces.post("/updateluz")
-def update_luz(luz: Luces):
-    consulta = f"""
-    CALL actualizar_luz(
-        '{luz.id_luz}',
-        '{luz.nombre_luz}',
-        '{luz.estado}',
-        '{luz.id_dispositivo}'
-    );
-    """
+# ======================================
+#   ELIMINAR LUZ
+# ======================================
+@rutaluces.delete("/eliminarluz")
+def eliminar_luz(luz: Luces):
+    query = "SELECT eliminar_luz(%s);"
+    valores = (luz.id_luz,)
+
     try:
-        sql = connexion.cursor()
-        sql.execute(consulta)
+        cursor = connexion.cursor()
+        cursor.execute(query, valores)
         connexion.commit()
-        return {"message": "1"}
-    except Exception as e:
-        print("----- Error:", e)
-        return {"error": str(e)}
+        return {"message": "Luz eliminada correctamente"}
+    except Exception as err:
+        return {"error": str(err)}
