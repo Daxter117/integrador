@@ -7,23 +7,20 @@ rutausuarios = APIRouter()
 # ======================================
 #   OBTENER TODOS LOS USUARIOS
 # ======================================
-@rutausuarios.get("/usuarios")
+@rutausuarios.get("/getusuarios")
 def get_usuarios():
-    consulta = "SELECT * FROM vista_usuarios;"
     try:
         cursor = connexion.cursor()
-        cursor.execute(consulta)
-        resultado = cursor.fetchall()
-        return resultado
+        cursor.execute("SELECT * FROM vista_usuarios;")
+        return cursor.fetchall()
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   CREAR USUARIO
 # ======================================
-@rutausuarios.post("/usuarios")
+@rutausuarios.post("/crearusuario")
 def crear_usuario(usu: Usuarios):
     query = f"""
         SELECT crear_usuario(
@@ -39,15 +36,14 @@ def crear_usuario(usu: Usuarios):
         connexion.commit()
         return {"message": "Usuario creado correctamente"}
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   ACTUALIZAR USUARIO
 # ======================================
-@rutausuarios.put("/usuarios")
-def update_usuario(usu: Usuarios):
+@rutausuarios.put("/actualizarusuario")
+def actualizar_usuario(usu: Usuarios):
     query = f"""
         SELECT actualizar_usuario(
             {usu.id_usuario},
@@ -63,21 +59,19 @@ def update_usuario(usu: Usuarios):
         connexion.commit()
         return {"message": "Usuario actualizado correctamente"}
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   ELIMINAR USUARIO
 # ======================================
-@rutausuarios.delete("/usuarios")
-def delete_usuario(usu: Usuarios):
+@rutausuarios.delete("/eliminarusuario")
+def eliminar_usuario(usu: Usuarios):
     query = f"SELECT eliminar_usuario({usu.id_usuario});"
     try:
         cursor = connexion.cursor()
         cursor.execute(query)
         connexion.commit()
-        return {"message": 'Usuario eliminado correctamente'}
+        return {"message": "Usuario eliminado correctamente"}
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
