@@ -5,77 +5,62 @@ from schemas.dispositivos import Dispositivos
 rutadispositivos = APIRouter()
 
 # ======================================
-#   OBTENER TODOS LOS DISPOSITIVOS
+#   OBTENER DISPOSITIVOS
 # ======================================
-@rutadispositivos.get("/dispositivos")
+@rutadispositivos.get("/getdispositivos")
 def get_dispositivos():
-    consulta = "SELECT * FROM vista_dispositivos;"
     try:
         cursor = connexion.cursor()
-        cursor.execute(consulta)
-        resultado = cursor.fetchall()
-        return resultado
+        cursor.execute("SELECT * FROM vista_dispositivos;")
+        return cursor.fetchall()
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   CREAR DISPOSITIVO
 # ======================================
-@rutadispositivos.post("/dispositivos")
-def crear_dispositivo(dev: Dispositivos):
-    query = f"""
-        CALL crear_dispositivo(
-            {dev.estado},
-            {dev.modo_operacion},
-            {dev.id_usuario}
-        );
-    """
+@rutadispositivos.post("/creardispositivo")
+def crear_dispositivo(dis: Dispositivos):
+    query = "SELECT crear_dispositivo(%s, %s, %s);"
+    valores = (dis.estado, dis.modo_operacion, dis.id_usuario)
+
     try:
         cursor = connexion.cursor()
-        cursor.execute(query)
+        cursor.execute(query, valores)
         connexion.commit()
         return {"message": "Dispositivo creado correctamente"}
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   ACTUALIZAR DISPOSITIVO
 # ======================================
-@rutadispositivos.put("/dispositivos")
-def actualizar_dispositivo(dev: Dispositivos):
-    query = f"""
-        CALL actualizar_dispositivo(
-            {dev.id_dispositivo},
-            {dev.estado},
-            {dev.modo_operacion},
-            {dev.id_usuario}
-        );
-    """
+@rutadispositivos.put("/actualizardispositivo")
+def actualizar_dispositivo(dis: Dispositivos):
+    query = "SELECT actualizar_dispositivo(%s, %s, %s, %s);"
+    valores = (dis.id_dispositivo, dis.estado, dis.modo_operacion, dis.id_usuario)
+
     try:
         cursor = connexion.cursor()
-        cursor.execute(query)
+        cursor.execute(query, valores)
         connexion.commit()
         return {"message": "Dispositivo actualizado correctamente"}
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   ELIMINAR DISPOSITIVO
 # ======================================
-@rutadispositivos.delete("/dispositivos")
-def eliminar_dispositivo(dev: Dispositivos):
-    query = f"CALL eliminar_dispositivo({dev.id_dispositivo});"
+@rutadispositivos.delete("/eliminardispositivo")
+def eliminar_dispositivo(dis: Dispositivos):
+    query = "SELECT eliminar_dispositivo(%s);"
+    valores = (dis.id_dispositivo,)
+
     try:
         cursor = connexion.cursor()
-        cursor.execute(query)
+        cursor.execute(query, valores)
         connexion.commit()
-        return {"message": 'Dispositivo eliminado correctamente'}
-    except Exception as err:
-        print("Error:", err)
-        return {"error": str(err)}
+        return {"message": "Dispositivo eli
