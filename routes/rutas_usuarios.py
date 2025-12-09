@@ -23,13 +23,14 @@ def get_usuarios():
 # ======================================
 #   CREAR USUARIO
 # ======================================
-@rutausuarios.post("/crearusuarios")
+@rutausuarios.post("/usuarios")
 def crear_usuario(usu: Usuarios):
     query = f"""
-        CALL crear_usuario(
+        SELECT crear_usuario(
             '{usu.nombre}',
             '{usu.correo}',
-            '{usu.contrasena}'
+            '{usu.contrasena}',
+            '{usu.direccion}'
         );
     """
     try:
@@ -48,11 +49,12 @@ def crear_usuario(usu: Usuarios):
 @rutausuarios.put("/usuarios")
 def update_usuario(usu: Usuarios):
     query = f"""
-        CALL actualizar_usuario(
+        SELECT actualizar_usuario(
             {usu.id_usuario},
             '{usu.nombre}',
             '{usu.correo}',
-            '{usu.contrasena}'
+            '{usu.contrasena}',
+            '{usu.direccion}'
         );
     """
     try:
@@ -70,13 +72,12 @@ def update_usuario(usu: Usuarios):
 # ======================================
 @rutausuarios.delete("/usuarios")
 def delete_usuario(usu: Usuarios):
-    query = f"CALL eliminar_usuario({usu.id_usuario});"
+    query = f"SELECT eliminar_usuario({usu.id_usuario});"
     try:
         cursor = connexion.cursor()
         cursor.execute(query)
         connexion.commit()
-        return {"message": "Usuario eliminado correctamente"}
+        return {"message": 'Usuario eliminado correctamente'}
     except Exception as err:
         print("Error:", err)
         return {"error": str(err)}
-
