@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from database.db import connexion
-from schemas.extractores import Extractores
+from schemas.extractores import extractores
 
 rutaextractores = APIRouter()
 
@@ -74,3 +74,4 @@ def eliminar_extractor(ext: Extractores):
         return {"message": "Extractor eliminado correctamente"}
     except Exception as err:
         return {"error": str(err)}
+
