@@ -23,7 +23,7 @@ def get_usuarios():
 # ======================================
 #   CREAR USUARIO
 # ======================================
-@rutausuarios.post("/usuarios")
+@rutausuarios.post("/crearusuarios")
 def crear_usuario(usu: Usuarios):
     query = f"""
         CALL crear_usuario(
@@ -79,3 +79,4 @@ def delete_usuario(usu: Usuarios):
     except Exception as err:
         print("Error:", err)
         return {"error": str(err)}
+
