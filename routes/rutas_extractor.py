@@ -1,87 +1,76 @@
 from fastapi import APIRouter
 from database.db import connexion
-from schemas.extractores import extractores
+from schemas.extractores import Extractores
 
 rutaextractores = APIRouter()
 
 # ======================================
-#   OBTENER TODOS LOS EXTRACTORES
+#   GET EXTRACTORES
 # ======================================
-@rutaextractores.get("/extractores")
+@rutaextractores.get("/getextractores")
 def get_extractores():
-    consulta = "SELECT * FROM vista_extractores;"
     try:
         cursor = connexion.cursor()
-        cursor.execute(consulta)
-        resultado = cursor.fetchall()
-        return resultado
+        cursor.execute("SELECT * FROM vista_extractores;")
+        return cursor.fetchall()
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   CREAR EXTRACTOR
 # ======================================
-@rutaextractores.post("/extractores")
-def crear_extractor(ex: extractores):
-    query = f"""
-        CALL crear_extractor(
-            {ex.estado},
-            {ex.modo_func},
-            '{ex.hora_inicio}',
-            '{ex.hora_fin}',
-            {ex.umbral_co2},
-            {ex.id_dispositivo}
-        );
-    """
+@rutaextractores.post("/crearextractor")
+def crear_extractor(ext: Extractores):
+    query = "SELECT crear_extractor(%s, %s, %s, %s, %s, %s);"
+    valores = (ext.estado, ext.modo_func, ext.hora_inicio, ext.hora_fin, ext.umbral_co2, ext.id_dispositivo)
+
     try:
         cursor = connexion.cursor()
-        cursor.execute(query)
+        cursor.execute(query, valores)
         connexion.commit()
         return {"message": "Extractor creado correctamente"}
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   ACTUALIZAR EXTRACTOR
 # ======================================
-@rutaextractores.put("/extractores")
-def actualizar_extractor(ex: extractores):
-    query = f"""
-        CALL actualizar_extractor(
-            {ex.id_extractor},
-            {ex.estado},
-            {ex.modo_func},
-            '{ex.hora_inicio}',
-            '{ex.hora_fin}',
-            {ex.umbral_co2},
-            {ex.id_dispositivo}
-        );
-    """
+@rutaextractores.put("/actualizarextractor")
+def actualizar_extractor(ext: Extractores):
+    query = "SELECT actualizar_extractor(%s, %s, %s, %s, %s, %s, %s);"
+    valores = (
+        ext.id_extractor,
+        ext.estado,
+        ext.modo_func,
+        ext.hora_inicio,
+        ext.hora_fin,
+        ext.umbral_co2,
+        ext.id_dispositivo
+    )
+
     try:
         cursor = connexion.cursor()
-        cursor.execute(query)
+        cursor.execute(query, valores)
         connexion.commit()
         return {"message": "Extractor actualizado correctamente"}
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
 
 
 # ======================================
 #   ELIMINAR EXTRACTOR
 # ======================================
-@rutaextractores.delete("/extractores")
-def eliminar_extractor(ex: extractores):
-    query = f"CALL eliminar_extractor({ex.id_extractor});"
+@rutaextractores.delete("/eliminarextractor")
+def eliminar_extractor(ext: Extractores):
+    query = "SELECT eliminar_extractor(%s);"
+    valores = (ext.id_extractor,)
+
     try:
         cursor = connexion.cursor()
-        cursor.execute(query)
+        cursor.execute(query, valores)
         connexion.commit()
         return {"message": "Extractor eliminado correctamente"}
     except Exception as err:
-        print("Error:", err)
         return {"error": str(err)}
