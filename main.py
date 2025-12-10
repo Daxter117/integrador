@@ -26,10 +26,7 @@ app.add_middleware(
 # ==================================
 app.include_router(rutaerrores)
 app.include_router(rutadispositivos)
-app.include_router(rutalecturas)
+app.include_router(rutalecturas)       # ← aquí ya se incluye el router corregido
 app.include_router(rutaextractores)
 app.include_router(rutaluces)
 app.include_router(rutausuarios)
-
-
-
