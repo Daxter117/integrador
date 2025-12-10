@@ -22,7 +22,7 @@ def get_lecturas():
 # ======================================
 def crear_lectura(lec: Lecturas_brutas):
     query = """
-        INSERT INTO lecturas (valor_co2, valor_tvocs, id_dispositivo, fecha_hora)
+        INSERT INTO lecturas_brutas (valor_co2, valor_tvocs, id_dispositivo, fecha_hora)
         VALUES (%s, %s, %s, %s)
         RETURNING id_lectura;
     """
@@ -35,7 +35,7 @@ def crear_lectura(lec: Lecturas_brutas):
         connexion.commit()
         return {"message": "Lectura creada correctamente", "id_lectura": new_id}
     except Exception as err:
-        connexion.rollback()
         return {"error": str(err)}
+
 
 
