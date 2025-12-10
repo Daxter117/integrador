@@ -14,12 +14,13 @@ def get_lecturas():
         cursor.execute("SELECT * FROM vista_lecturas_brutas;")
         return cursor.fetchall()
     except Exception as err:
+        connexion.rollback()
         return {"error": str(err)}
-
 
 # ======================================
 #   CREAR LECTURA
 # ======================================
+@rutalecturas.post("/crear_lectura")   # ← decorador agregado
 def crear_lectura(lec: Lecturas_brutas):
     query = """
         INSERT INTO lecturas_brutas (valor_co2, valor_tvocs, id_dispositivo, fecha_hora)
@@ -35,5 +36,5 @@ def crear_lectura(lec: Lecturas_brutas):
         connexion.commit()
         return {"message": "Lectura creada correctamente", "id_lectura": new_id}
     except Exception as err:
-        connexion.rollback()
+        connexion.rollback()   # ← rollback para limpiar transacción
         return {"error": str(err)}
