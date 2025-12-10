@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class Lecturas_brutas(BaseModel):
-    id_lectura:float
-    valor_co2:float
-    valor_tvocs:float
-    fecha_hora:str
+    valor_co2: float
+    valor_tvocs: float
+    id_dispositivo: int
+    fecha_hora: str 
