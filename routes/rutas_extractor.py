@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from database.db import connexion
-from schemas.extractores import extractores
+from schemas.extractores import extractores   # <-- correcto, en minúsculas
 
 rutaextractores = APIRouter()
 
@@ -21,9 +21,16 @@ def get_extractores():
 #   CREAR EXTRACTOR
 # ======================================
 @rutaextractores.post("/crearextractor")
-def crear_extractor(ext: Extractores):
+def crear_extractor(ext: extractores):     # <-- corregido
     query = "SELECT crear_extractor(%s, %s, %s, %s, %s, %s);"
-    valores = (ext.estado, ext.modo_func, ext.hora_inicio, ext.hora_fin, ext.umbral_co2, ext.id_dispositivo)
+    valores = (
+        ext.estado,
+        ext.modo_func,
+        ext.hora_inicio,
+        ext.hora_fin,
+        ext.umbral_co2,
+        ext.id_dispositivo
+    )
 
     try:
         cursor = connexion.cursor()
@@ -38,7 +45,7 @@ def crear_extractor(ext: Extractores):
 #   ACTUALIZAR EXTRACTOR
 # ======================================
 @rutaextractores.put("/actualizarextractor")
-def actualizar_extractor(ext: Extractores):
+def actualizar_extractor(ext: extractores):   # <-- corregido
     query = "SELECT actualizar_extractor(%s, %s, %s, %s, %s, %s, %s);"
     valores = (
         ext.id_extractor,
@@ -63,7 +70,7 @@ def actualizar_extractor(ext: Extractores):
 #   ELIMINAR EXTRACTOR
 # ======================================
 @rutaextractores.delete("/eliminarextractor")
-def eliminar_extractor(ext: Extractores):
+def eliminar_extractor(ext: extractores):   # <-- corregido
     query = "SELECT eliminar_extractor(%s);"
     valores = (ext.id_extractor,)
 
@@ -74,4 +81,3 @@ def eliminar_extractor(ext: Extractores):
         return {"message": "Extractor eliminado correctamente"}
     except Exception as err:
         return {"error": str(err)}
-
