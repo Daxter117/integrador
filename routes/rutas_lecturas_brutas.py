@@ -36,7 +36,4 @@ def crear_lectura(lec: Lecturas_brutas):
         return {"message": "Lectura creada correctamente", "id_lectura": new_id}
     except Exception as err:
         connexion.rollback()
-        return {"error": str(err)}
-
-
-
+        return {"error": str(err)}
