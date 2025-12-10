@@ -20,16 +20,22 @@ def get_lecturas():
 # ======================================
 #   CREAR LECTURA
 # ======================================
-@rutalecturas.post("/crearlectura")
 def crear_lectura(lec: Lecturas_brutas):
-    query = "SELECT crear_lectura(%s, %s, %s, %s);"
+    query = """
+        INSERT INTO lecturas (valor_co2, valor_tvocs, id_dispositivo, fecha_hora)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id_lectura;
+    """
     valores = (lec.valor_co2, lec.valor_tvocs, lec.id_dispositivo, lec.fecha_hora)
 
     try:
         cursor = connexion.cursor()
         cursor.execute(query, valores)
+        new_id = cursor.fetchone()[0]
         connexion.commit()
-        return {"message": "Lectura creada correctamente"}
+        return {"message": "Lectura creada correctamente", "id_lectura": new_id}
     except Exception as err:
-        return {"error": str(err)}
+        connexion.rollback()
+        return {"error": str(err)}
+
 
