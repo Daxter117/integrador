@@ -4,17 +4,14 @@ from schemas.extractores import Extractores
  
 rutaextractores = APIRouter()
  
-# ======================================
-#   ACTUALIZAR EXTRACTOR
-# ======================================
 @rutaextractores.put("/actualizar_extractor")
 def actualizar_extractor(ext: Extractores):
     query = """
         UPDATE extractores
         SET estado = %s,
             modo_func = COALESCE(%s, 0),
-            hora_inicio = COALESCE(%s, 0),
-            hora_fin = COALESCE(%s, 0),
+            hora_inicio = COALESCE(%s, '00:00'),
+            hora_fin = COALESCE(%s, '00:00'),
             umbral_co2 = COALESCE(%s, 0),
             id_dispositivo = COALESCE(%s, 0)
         WHERE id_extractor = %s
@@ -29,7 +26,6 @@ def actualizar_extractor(ext: Extractores):
         ext.id_dispositivo,
         ext.id_extractor
     )
- 
     try:
         cursor = connexion.cursor()
         cursor.execute(query, valores)
