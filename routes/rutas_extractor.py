@@ -10,8 +10,8 @@ def actualizar_extractor(ext: Extractores):
         UPDATE extractores
         SET estado = %s,
             modo_func = COALESCE(%s, 0),
-            hora_inicio = COALESCE(%s, '00:00'),
-            hora_fin = COALESCE(%s, '00:00'),
+            hora_inicio = COALESCE(%s, '00:00:00'),
+            hora_fin = COALESCE(%s, '00:00:00'),
             umbral_co2 = COALESCE(%s, 0),
             id_dispositivo = COALESCE(%s, 0)
         WHERE id_extractor = %s
@@ -29,6 +29,7 @@ def actualizar_extractor(ext: Extractores):
     try:
         cursor = connexion.cursor()
         cursor.execute(query, valores)
+        print("Filas afectadas:", cursor.rowcount)   # 👈 log para depuración
         updated = cursor.fetchone()
         if updated is None:
             connexion.rollback()
