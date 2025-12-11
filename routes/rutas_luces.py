@@ -10,6 +10,8 @@ def actualizar_luz(luz: Luces):
         UPDATE luces
         SET estado_luz = %s,
             modo_func = COALESCE(%s, 0),
+            hora_inicio = COALESCE(%s, '00:00'),
+            hora_fin = COALESCE(%s, '00:00'),
             id_dispositivo = COALESCE(%s, 0)
         WHERE id_luz = %s
         RETURNING id_luz;
@@ -17,18 +19,27 @@ def actualizar_luz(luz: Luces):
     valores = (
         luz.estado_luz,
         luz.modo_func,
+        luz.hora_inicio,
+        luz.hora_fin,
         luz.id_dispositivo,
         luz.id_luz
     )
     try:
         cursor = connexion.cursor()
         cursor.execute(query, valores)
-        updated_id = cursor.fetchone()[0]
+        updated = cursor.fetchone()
+        if updated is None:
+            connexion.rollback()
+            return {"error": "No se encontró el id_luz para actualizar"}
         connexion.commit()
         return {
             "message": "Luz actualizada correctamente",
-            "id_luz": updated_id,
-            "estado_luz": luz.estado_luz
+            "id_luz": updated[0],
+            "estado_luz": luz.estado_luz,
+            "modo_func": luz.modo_func,
+            "hora_inicio": luz.hora_inicio,
+            "hora_fin": luz.hora_fin,
+            "id_dispositivo": luz.id_dispositivo
         }
     except Exception as err:
         connexion.rollback()
