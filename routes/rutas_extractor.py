@@ -29,12 +29,20 @@ def actualizar_extractor(ext: Extractores):
     try:
         cursor = connexion.cursor()
         cursor.execute(query, valores)
-        updated_id = cursor.fetchone()[0]
+        updated = cursor.fetchone()
+        if updated is None:
+            connexion.rollback()
+            return {"error": "No se encontró el id_extractor para actualizar"}
         connexion.commit()
         return {
             "message": "Extractor actualizado correctamente",
-            "id_extractor": updated_id,
-            "estado": ext.estado
+            "id_extractor": updated[0],
+            "estado": ext.estado,
+            "modo_func": ext.modo_func,
+            "hora_inicio": ext.hora_inicio,
+            "hora_fin": ext.hora_fin,
+            "umbral_co2": ext.umbral_co2,
+            "id_dispositivo": ext.id_dispositivo
         }
     except Exception as err:
         connexion.rollback()
