@@ -7,5 +7,4 @@ class Extractores(BaseModel):
     hora_ini:str
     hora_fin:str
     umbral:float
-
     id_dispositivo:int
