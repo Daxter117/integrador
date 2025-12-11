@@ -1,41 +1,40 @@
 from fastapi import APIRouter
 from database.db import connexion
-from schemas.extractores import Extractores
- 
-rutaextractores = APIRouter()
- 
-@rutaextractores.put("/actualizar_extractor")
-def actualizar_extractor(ext: Extractores):
+from schemas.lecturas_brutas import Lecturas_brutas
+
+rutalecturas = APIRouter()
+
+# ======================================
+#   OBTENER TODAS LAS LECTURAS
+# ======================================
+@rutalecturas.get("/getlecturas")
+def get_lecturas():
+    try:
+        cursor = connexion.cursor()
+        cursor.execute("SELECT * FROM vista_lecturas_brutas;")
+        return cursor.fetchall()
+    except Exception as err:
+        connexion.rollback()
+        return {"error": str(err)}
+
+# ======================================
+#   CREAR LECTURA
+# ======================================
+@rutalecturas.post("/crear_lectura")   # ← decorador agregado
+def crear_lectura(lec: Lecturas_brutas):
     query = """
-        UPDATE extractores
-        SET estado = %s,
-            modo_func = COALESCE(%s, 0),
-            hora_inicio = COALESCE(%s, '00:00'),
-            hora_fin = COALESCE(%s, '00:00'),
-            umbral_co2 = COALESCE(%s, 0),
-            id_dispositivo = COALESCE(%s, 0)
-        WHERE id_extractor = %s
-        RETURNING id_extractor;
+        INSERT INTO lecturas_brutas (valor_co2, valor_tvocs, id_dispositivo, fecha_hora)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id_lectura;
     """
-    valores = (
-        ext.estado,
-        ext.modo_func,
-        ext.hora_inicio,
-        ext.hora_fin,
-        ext.umbral_co2,
-        ext.id_dispositivo,
-        ext.id_extractor
-    )
+    valores = (lec.valor_co2, lec.valor_tvocs, lec.id_dispositivo, lec.fecha_hora)
+
     try:
         cursor = connexion.cursor()
         cursor.execute(query, valores)
-        updated_id = cursor.fetchone()[0]
+        new_id = cursor.fetchone()[0]
         connexion.commit()
-        return {
-            "message": "Extractor actualizado correctamente",
-            "id_extractor": updated_id,
-            "estado": ext.estado
-        }
+        return {"message": "Lectura creada correctamente", "id_lectura": new_id}
     except Exception as err:
-        connexion.rollback()
+        connexion.rollback()   # ← rollback para limpiar transacción
         return {"error": str(err)}
