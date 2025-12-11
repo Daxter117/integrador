@@ -4,9 +4,6 @@ from schemas.luces import Luces
  
 rutaluces = APIRouter()
  
-# ======================================
-#   ACTUALIZAR LUZ
-# ======================================
 @rutaluces.put("/actualizar_luz")
 def actualizar_luz(luz: Luces):
     query = """
@@ -23,7 +20,6 @@ def actualizar_luz(luz: Luces):
         luz.id_dispositivo,
         luz.id_luz
     )
- 
     try:
         cursor = connexion.cursor()
         cursor.execute(query, valores)
