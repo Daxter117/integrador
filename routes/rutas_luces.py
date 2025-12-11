@@ -10,8 +10,8 @@ def actualizar_luz(luz: Luces):
         UPDATE luces
         SET estado_luz = %s,
             modo_func = COALESCE(%s, 0),
-            hora_inicio = COALESCE(%s, '00:00'),
-            hora_fin = COALESCE(%s, '00:00'),
+            hora_inicio = COALESCE(%s, '00:00:00'),
+            hora_fin = COALESCE(%s, '00:00:00'),
             id_dispositivo = COALESCE(%s, 0)
         WHERE id_luz = %s
         RETURNING id_luz;
@@ -27,6 +27,7 @@ def actualizar_luz(luz: Luces):
     try:
         cursor = connexion.cursor()
         cursor.execute(query, valores)
+        print("Filas afectadas:", cursor.rowcount)   # 👈 log para depuración
         updated = cursor.fetchone()
         if updated is None:
             connexion.rollback()
