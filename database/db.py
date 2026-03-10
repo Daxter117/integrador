@@ -2,10 +2,14 @@ import psycopg2
 
 try:
     connexion = psycopg2.connect(
-        host="dpg-d4r3h449c44c73bmjkm0-a.virginia-postgres.render.com",
-        database="oxigarden",
+        # El Hostname externo de tu captura
+        host="dpg-d6o7li450q8c73amejdg-a.virginia-postgres.render.com",
+        # El nombre de la Database de tu captura
+        database="oxigarden_pv2x",
+        # El Username de tu captura
         user="usuarios",
-        password="G5a5PgUQlhB8TfP6VGkt3MEPmJwwvxnf",
+        # El Password nuevo de tu captura
+        password="5e4DiAATcMg3P0JZ7MlHVvzrKrytrmOy",
         port=5432,
         sslmode="require"
     )
